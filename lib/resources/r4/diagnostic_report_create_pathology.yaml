@@ -1,0 +1,256 @@
+---
+name: DiagnosticReport
+field_name_base_url: https://www.hl7.org/fhir/diagnosticreport-definitions.html#DiagnosticReport
+fields:
+- name: resourceType
+  required: 'Yes'
+  type: string
+  description: The type of the FHIR resource.
+  example: |
+    {
+      "resourceType": "DiagnosticReport"
+    }
+  note: resourceType must be DiagnosticReport.
+  url: http://hl7.org/fhir/r4/DiagnosticReport.html
+
+- name: status
+  required: 'Yes'
+  type: code
+  action:
+    - create
+  description: The status of the diagnostic report.
+  note: Must be one of amended, cancelled, entered-in-error, final, partial, preliminary, registered, superseded, or unknown.
+  url: http://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.status
+  example: |
+    {
+      "status": "final"
+    }
+  binding:
+    description: The status of the diagnostic report.
+    terminology:
+      - display: DiagnosticReport status
+        system: http://hl7.org/fhir/diagnostic-report-status
+        info_link: https://www.hl7.org/fhir/valueset-diagnostic-report-status.html
+
+- name: category
+  required: 'Yes'
+  type: CodeableConcept
+  action:
+    - create
+  description: A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, pathology). This is used for searching, sorting and display purposes.
+  note: Must be LP7839-6 for Pathology concept.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.category
+  example: |
+    {
+      "category": [
+        {
+            "coding": [
+                {
+                    "code": "LP7839-6",
+                    "display": "Pathology study",
+                    "isUserSelected": false,
+                    "system": "http://loinc.org"
+                }
+            ],
+            "text": "string"
+        }
+      ]
+    }
+  binding:
+    description: A categorization for the type of diagnostic report.
+    terminology:
+    - display: US Core DiagnosticReport Category
+      system: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
+      info_link: https://hl7.org/fhir/us/core/ValueSet-us-core-diagnosticreport-category.html
+    - display: US Core DiagnosticReport Category
+      system: http://loinc.org
+      info_link: https://hl7.org/fhir/us/core/ValueSet-us-core-diagnosticreport-category.html
+
+- name: code
+  required: 'Yes'
+  type: CodeableConcept
+  action:
+    - create
+  description: Specifies the particular kind of diagnostic report.
+  note: The code must include a LOINC or a proprietary coding but not both together. Multiple LOINC codings or a single proprietary coding can be provided.
+        <br/><br/>
+        When providing proprietary code system, it should be of format 'https://fhir.cerner.com/&lt;your EHR source id&gt;/codeSet/&lt;code set&gt;' (where code set is Millennium codeset 72). Example&#58; 'https://fhir.cerner.com/d242a518-4074-4bd4-a3a6-adfe0c5c1c51/codeSet/72'.
+        <br/><br/>
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.code
+  example: |
+    {
+      "code": {
+        "coding": [
+            
+            {
+                "code": "4187236",
+                "system": "https://fhir.cerner.com/d242a518-4074-4bd4-a3a6-adfe0c5c1c51/codeSet/72",
+                "userSelected": true,
+                "display": "Anatomic Pathology"
+            }
+        ],
+        "text": "Anatomic Pathology"
+      }
+    }
+  binding:
+    description: Specifies the particular kind of diagnostic report.
+    terminology:
+    - display: US Core DiagnosticReport Code
+      system: http://loinc.org
+      info_link: http://hl7.org/fhir/us/core/ValueSet-us-core-laboratory-test-codes.html
+      info_link: http://hl7.org/fhir/us/core/ValueSet-us-core-diagnosticreport-report-and-note-codes.html
+    - display: US Core DiagnosticReport Code
+      system: http://terminology.hl7.org/CodeSystem/v3-NullFlavor (when type doesn't have a LOINC code)
+      info_link: http://hl7.org/fhir/us/core/ValueSet-us-core-laboratory-test-codes.html
+      info_link: http://hl7.org/fhir/us/core/ValueSet-us-core-diagnosticreport-report-and-note-codes.html
+    - display: Millennium Event Code
+      system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/72
+      info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-72-clinical-event-codes
+
+- name: subject
+  required: 'Yes'
+  type: Reference
+  action:
+    - create
+  description: The subject of the report. Usually, but not always, this is a patient. However, diagnostic services also perform analyses on specimens collected from a variety of other sources.
+  note: Only patient references are supported.
+  url: http://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.subject
+  example: |
+    {
+      "subject": {
+        "reference": "Patient/12457977"
+      }
+    }
+
+- name: performer
+  required: 'Yes'
+  type: Reference
+  action:
+    - create
+  description: The diagnostic service that is responsible for issuing the report.
+  note: Must contain Practitioner or Organization references with valid millennium ids.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.performer
+  example: |
+    {
+      "performer": [
+        {
+          "reference": "Practitioner/3332064"
+        }
+      ]
+    }
+
+- name: identifier
+  required: 'Yes'
+  type: Identifier
+  action:
+    - create
+  description: Identifiers assigned to this report by the performer or other systems.
+  note: The identifier must include fields- system, value.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.identifier
+  example: |
+    {
+      "identifier": [
+        {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CEfda49233-ccfa-4ed4-afbc-9f5082c2bf0c-34824240-2022051205454801"
+        }
+      ]
+    }
+
+- name: effectiveDateTime
+  required: 'Yes'
+  type: dateTime
+  action:
+    - create
+  description: The time or time-period the observed values are related to. When the subject of the report is a patient, this is usually either the time of the procedure or of specimen collection(s), but very often the source of the date/time is not known, only the date/time itself.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.effective[x]
+  example: |
+    {
+      "effectiveDateTime": "2020-12-27T09:12:28Z",
+    }
+
+- name: presentedForm
+  required: 'Yes'
+  type: Attachment
+  action:
+    - create
+  description: Rich text representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent.
+  note: Data and content type must be provided.
+  url: https://www.hl7.org/fhir/diagnosticreport-definitions.html#DiagnosticReport.presentedForm
+  example: |
+   {
+     "presentedForm": {
+            "contentType": "application/pdf;charset=utf-8",
+            "data": "PGh0bWw+Cjx0aXRsZT4gVGVzdCBEb2N1bWVudCA8L3RpdGxlPgoKRG9jdW1lbnQgY29udGVudCEKCjwvaHRtbD4="
+          }
+   }
+
+- name: presentedForm.contentType
+  required: 'Yes'
+  type: Code
+  action:
+    - create
+  description: Identifies the type of the data in the attachment and allows a method to be chosen to interpret or render the data. Includes mime type parameters such as charset where appropriate.
+  note: Must be provided. Content Type must include a supported MIME type and character set. The supported values are `application/pdf`, `text/plain;charset=utf-8`, `text/richtext;charset=utf-8`, `text/rtf;charset=utf-8`, `text/html;charset=utf-8`, `application/xml;charset=utf-8`, and `application/xhtml+xml;charset=utf-8`
+  url: https://www.hl7.org/fhir/datatypes-definitions.html#Attachment.contentType
+  example: |
+   {
+     "contentType": "application/pdf;charset=utf-8"
+   }
+
+- name: presentedForm.data
+  required: 'Yes'
+  type: base64Binary
+  action:
+    - create
+  description: The actual data of the attachment - a sequence of bytes, base64 encoded.
+  url: https://www.hl7.org/fhir/datatypes-definitions.html#Attachment.data
+  example: |
+   {
+     "data": "PGh0bWw+Cjx0aXRsZT4gVGVzdCBEb2N1bWVudCA8L3RpdGxlPgoKRG9jdW1lbnQgY29udGVudCEKCjwvaHRtbD4="
+   }
+
+- name: encounter
+  required: 'No'
+  type: Reference
+  action:
+    - create
+  description: The healthcare event (e.g. a patient and healthcare provider interaction) which this DiagnosticReport is about.
+  note: The encounter has to match the original document encounter.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.encounter
+  example: |
+    {
+      "encounter": {
+        "reference": "Encounter/98041577"
+      }
+    }
+
+- name: issued
+  required: 'No'
+  type: dateTime
+  action:
+    - create
+  description: The date and time that this version of the report was made available to providers, typically after the report was reviewed and verified.
+  note: A time component must be provided with the date.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.issued
+  example: |
+    {
+      "issued": "2020-07-29T21:02:04.000Z"
+    }
+
+- name: basedOn
+  required: 'No'
+  type: Reference
+  action:
+    - create
+  description: Details concerning a service requested.
+  note: Must contain ServiceRequest references with valid millennium ids.
+  url: https://hl7.org/fhir/r4/diagnosticreport-definitions.html#DiagnosticReport.basedOn
+  example: |
+    {
+      "basedOn": [
+        {
+            "reference": "ServiceRequest/99928073"
+        }
+      ]
+    }
